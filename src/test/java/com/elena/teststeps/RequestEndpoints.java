@@ -56,6 +56,7 @@ public class RequestEndpoints {
                 .header("Authorization", token)
                 .header("Content-type", "application/json")
                 .and()
+                .body(user)
                 .when()
                 .patch(UPDATE_USER_DATA);
         return response;

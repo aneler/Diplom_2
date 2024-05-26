@@ -1,6 +1,7 @@
 package com.elena.test;
 
 import com.elena.json.User;
+import com.elena.json.UserData;
 import com.elena.json.UserLoginCreds;
 import com.elena.teststeps.RequestEndpoints;
 import io.qameta.allure.Step;
@@ -25,8 +26,8 @@ public class UpdateUserTest {
     static String name = faker.name().firstName();
     static String emptyString = "";
 
-    static User newUser = new User(email, password, name);
-    static UserLoginCreds newUserLogin = new UserLoginCreds(email, password);
+    /*static User newUser = new User(email, password, name);
+    static UserLoginCreds newUserLogin = new UserLoginCreds(email, password);*/
 
     @Before
     public void setUp() {
@@ -34,24 +35,81 @@ public class UpdateUserTest {
     }
 
     @Test
-    @Description("Check user data successfully updated")
-    public void checkUserDataUpdated(){
-        Response responseRegister = requestEndpoints.sendRegisterRequest(newUser);
+    @Description("Check user email and data are successfully updated")
+    public void checkUserEmailAndNameUpdated(){
+        //new user registration
+        User initialUserData = new User(faker.internet().emailAddress(), faker.internet().password(), faker.name().firstName());
+        Response InitialResponse = requestEndpoints.sendRegisterRequest(initialUserData);
+        checkStatusCode(InitialResponse, 200);
+        //get access token
+        String accessToken = extractAccessToken(InitialResponse);
 
-        checkStatusCode(responseRegister, 200);
+        //update user data using token
+        UserData updatedUserData = new UserData(faker.internet().emailAddress(), faker.name().firstName());
+        Response updatedResponse = requestEndpoints.updateUserData(accessToken, updatedUserData);
+        checkStatusCode(updatedResponse, 200);
 
-        System.out.println(responseRegister.asString());
-        System.out.println(newUser.getEmail());
-        System.out.println(newUser.getName());
-        System.out.println(newUser.getPassword());
-        String accessToken = extractAccessToken(responseRegister);
-        System.out.println(extractAccessToken(responseRegister));
+        //check user data successfully updated
+        checkUserDetails(updatedResponse, updatedUserData.getEmail(), updatedUserData.getName());
+        //delete just created user
+        requestEndpoints.sendDeleteUserRequest(accessToken);
 
-        Response updateDataResp = requestEndpoints.updateUserData(accessToken);
         //добавить данные для обновления имеил и имени пользователя
         //добавить данные для обновления имеил пользователя
         //добавить данные для обновления имени пользователя
 
+    }
+    @Test
+    @Description("Check user email is successfully updated")
+    public void checkUserEmailUpdated(){
+        //new user registration
+        User initialUserData = new User(faker.internet().emailAddress(), faker.internet().password(), faker.name().firstName());
+        Response InitialResponse = requestEndpoints.sendRegisterRequest(initialUserData);
+        checkStatusCode(InitialResponse, 200);
+        //get access token
+        String accessToken = extractAccessToken(InitialResponse);
+
+        //update user email
+        UserData updatedUserData = new UserData(faker.internet().emailAddress(), initialUserData.getName());
+        Response updatedResponse = requestEndpoints.updateUserData(accessToken, updatedUserData);
+        checkStatusCode(updatedResponse, 200);
+
+        //check user email successfully updated
+        checkUserDetails(updatedResponse, updatedUserData.getEmail(), updatedUserData.getName());
+        requestEndpoints.sendDeleteUserRequest(accessToken);
+
+        //добавить данные для обновления имеил пользователя
+        //добавить данные для обновления имени пользователя
+    }
+
+    @Test
+    @Description("Check user name is successfully updated")
+    public void checkUserNameUpdated(){
+        //new user registration
+        User initialUserData = new User(faker.internet().emailAddress(), faker.internet().password(), faker.name().firstName());
+        Response InitialResponse = requestEndpoints.sendRegisterRequest(initialUserData);
+        checkStatusCode(InitialResponse, 200);
+        //get access token
+        String accessToken = extractAccessToken(InitialResponse);
+
+        //update user name
+        UserData updatedUserData = new UserData(initialUserData.getEmail(), faker.name().firstName());
+        Response updatedResponse = requestEndpoints.updateUserData(accessToken, updatedUserData);
+        checkStatusCode(updatedResponse, 200);
+
+        //check user email successfully updated
+        checkUserDetails(updatedResponse, updatedUserData.getEmail(), updatedUserData.getName());
+        requestEndpoints.sendDeleteUserRequest(accessToken);
+
+        //добавить данные для обновления имени пользователя
+    }
+    @Test
+    @Description("Update user data without auth")
+    public void checkUpdateUserWithoutToken(){
+        UserData newUser = new UserData(faker.internet().emailAddress(), faker.name().firstName());
+        Response responseNoToken = requestEndpoints.updateUserData("", newUser);
+        checkStatusCode(responseNoToken, 401);
+        checkResponseMessage(responseNoToken, TOKEN_MISSING);
     }
 
     //============================================================================
