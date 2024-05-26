@@ -1,8 +1,6 @@
 package com.elena.teststeps;
 
-import com.elena.json.User;
-import com.elena.json.UserData;
-import com.elena.json.UserLoginCreds;
+import com.elena.json.*;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 
@@ -59,6 +57,23 @@ public class RequestEndpoints {
                 .body(user)
                 .when()
                 .patch(UPDATE_USER_DATA);
+        return response;
+    }
+
+    @Step("Send POST to api/orders")
+    public Response createOrder(Ingredient ingredients){
+        Response response = given()
+                //дописать
+                .post(ORDERS);
+        return response;
+    }
+    @Step("Send GET to api/ingredients")
+    public Response getIngredientList(){
+        Response response = given()
+                .header("Content-type", "application/json")
+                .and()
+                .when()
+                .get(INGREDIENTS);
         return response;
     }
 }
