@@ -5,4 +5,5 @@ public class Messages {
     public static final String MISSING_FIELD_MSG = "Email, password and name are required fields";
     public static final String INCORRECT_EMAIL_PASSWORD = "email or password are incorrect";
     public static final String TOKEN_MISSING = "You should be authorised";
+    public static final String INCORRECT_INGREDIENT_ID = "One or more ids provided are incorrect";
 }

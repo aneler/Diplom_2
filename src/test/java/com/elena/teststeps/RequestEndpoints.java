@@ -4,6 +4,8 @@ import com.elena.json.*;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 
+import java.util.List;
+
 import static com.elena.utils.URLs.*;
 import static io.restassured.RestAssured.given;
 
@@ -61,12 +63,25 @@ public class RequestEndpoints {
     }
 
     @Step("Send POST to api/orders")
-    public Response createOrder(Ingredient ingredients){
+    public Response createOrder(String token, IngredientsRequest ingredients){
         Response response = given()
-                //дописать
+                .header("Authorization", token)
+                .header("Content-type", "application/json")
+                .and()
+                .body(ingredients)
                 .post(ORDERS);
         return response;
     }
+    @Step("Send GET to api/orders")
+    public Response getOrdersList(String token){
+        Response response = given()
+                .header("Authorization", token)
+                .header("Content-type", "application/json")
+                .and()
+                .get(ORDERS);
+        return response;
+    }
+
     @Step("Send GET to api/ingredients")
     public Response getIngredientList(){
         Response response = given()

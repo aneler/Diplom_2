@@ -8,5 +8,8 @@ public class IngredientsRequest {
     public IngredientsRequest(List<String> ingredients) {
         this.ingredients = ingredients;
     }
+    public int getAmountOfIngredients(){
+        return this.ingredients.size();
+    }
 }
 
